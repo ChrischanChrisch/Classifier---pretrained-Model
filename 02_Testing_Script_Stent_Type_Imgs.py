@@ -2,33 +2,31 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 import glob
-import tensorflow as tf
 
-from tensorflow.keras.models import load_model
 from keras.preprocessing.image import ImageDataGenerator, img_to_array
 from keras.models import load_model
 
-model = load_model(r'C:\KI\D\Stent_Type_BES\03_Final_Model\DesignModel.h5')
+model = load_model(r'C:\Tensorflow2\workspace\Classifier_2\03_Final_Model\DesignModel_new1.h5')
 Text = ''
 x1 = 550
 x2 = 1000
 y1 = 200
 y2 = 450
 
-for imag in glob.glob(r"C:\KI\D\Stent_Type_BES\New_Pics/*.jpg"):
+for imag in glob.glob(r"C:\Tensorflow2\workspace\Classifier_2\Test_imgs\*.jpg"):
     print(imag)
 
     frame = cv2.imread(imag)
-    frame = cv2.resize(frame, (1280, 720))
+    #frame = cv2.resize(frame, (1280, 720))
     disp = frame.copy()
-    frame = frame[y1:y2, x1:x2]
+    #frame = frame[y1:y2, x1:x2]
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-    classify_img = cv2.resize(frame, (250, 160))
+    classify_img = cv2.resize(frame, (250, 150))
     classify_img = img_to_array(classify_img)
     classify_img = np.array(classify_img, dtype="float")
     classify_img = classify_img.astype('float32') / classify_img.max()
-    classify_img = np.reshape(classify_img, (-1, 160, 250, 3))
+    classify_img = np.reshape(classify_img, (-1, 150, 250, 3))
 
     classifier = model.predict(classify_img, batch_size=1)
     prediction = np.argmax(classifier)
@@ -38,16 +36,16 @@ for imag in glob.glob(r"C:\KI\D\Stent_Type_BES\New_Pics/*.jpg"):
         Text = 'Design: S '
         print(Text, percent)
     elif prediction == 1:
-        Text = 'Design: Invalid '
+        Text = 'Design: M '
         print(Text, percent)
     elif prediction == 2:
-        Text = 'Design: Wrong '
+        Text = 'Design: L '
         print(Text, percent)
     elif prediction == 3:
-        Text = 'Design: M'
+        Text = 'Design: Invalid'
         print(Text, percent)
     elif prediction == 4:
-        Text = 'Design: L '
+        Text = 'Design: L 2'
         print(Text, percent)
 
     cv2.putText(disp, Text, (70, 80), cv2.FONT_HERSHEY_DUPLEX, 1.0, (255, 255, 255),

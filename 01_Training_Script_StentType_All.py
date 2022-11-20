@@ -1,31 +1,21 @@
 import datetime
 import os
 import cv2
-import tensorflow
 import numpy as np
 import keras
-from keras.models import load_model
-import skimage
 import matplotlib.pyplot as plt
 import pandas as pd
-#import efficientnet.keras as efn
 
-
-#from tensorflow.keras import backend as K
-#K.tensorflow_backend._get_available_gpus()
 from skimage import io
-from skimage.transform import resize
 from keras.models import Model
-from keras.layers import Input
 from keras.layers import Conv2D,Dense,Flatten,MaxPool2D,Activation,Dropout,UpSampling2D,add,Conv2DTranspose,concatenate,multiply,GlobalMaxPooling2D,GlobalAveragePooling2D,Input
 from keras.optimizers import Adam
 from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle
 from keras.callbacks import TensorBoard
-from keras.preprocessing.image import ImageDataGenerator, img_to_array
 from keras.applications.vgg16 import VGG16
-from keras.applications.resnet import ResNet50
-from keras.applications.inception_v3 import InceptionV3
+#from keras.applications.resnet import ResNet50
+#from keras.applications.inception_v3 import InceptionV3
 
 batch_size = 32
 epochs = 100
@@ -33,7 +23,7 @@ learn_rate = 0.0001
 #reg = l2(0.0005)
 
 i = 0
-path = r'C:\KI\KI_Inspection\Stent_Type_BES\01_Train_Data' #D:\Christian_KI_Projekt\CNN\Categories'
+path = r'C:\Tensorflow2\workspace\Classifier_2\01_Train_Data' #D:\Christian_KI_Projekt\CNN\Categories'
 subfolders = [f.name for f in os.scandir(path) if f.is_dir()]
 print('Anzahl Kategorien: ', len(subfolders))
 print(subfolders)
@@ -63,11 +53,11 @@ for i in range(0, len(subfolders)):
 for i in range(0, len(categorie_images)):
     print('No. in: ', categorie_name[i], ' are: ', len(categorie_images[i]))
 
-all_together = categorie_images[0]+categorie_images[1]+categorie_images[2]+categorie_images[3]+categorie_images[4]
+all_together = categorie_images[0]+categorie_images[1]+categorie_images[2]+categorie_images[3]  #  +categorie_images[4]
 print('All_together are:', len(all_together))
 train_X = np.array(all_together)
 
-labels = categorie_label[0]+categorie_label[1]+categorie_label[2]+categorie_label[3]+categorie_label[4]
+labels = categorie_label[0]+categorie_label[1]+categorie_label[2]+categorie_label[3]  #  +categorie_label[4]
 
 x_train = train_X.astype('float32') / train_X.max()
 x_train = np.reshape(x_train, (len(x_train), 160, 250, 3))
@@ -94,7 +84,7 @@ val_x, val_y = shuffle(val_x, val_y)
 
 # # ################################################
 # #21.08.2020
-base_model = VGG16(weights=r'C:\KI\KI_Inspection\Stent_Type_BES\04_Pretrained_Model\vgg16_weights_tf_dim_ordering_tf_kernels_notop.h5', include_top=False, input_shape=(160, 250, 3))
+base_model = VGG16(weights=r'C:\Tensorflow2\workspace\Classifier_2\04_Pretrained_Model\vgg16_weights_tf_dim_ordering_tf_kernels_notop.h5', include_top=False, input_shape=(160, 250, 3))
 x = base_model.get_layer('block3_conv3').output
 x.trainable = False
 # # # # # #inputs=Input(shape=(160,200,3))
@@ -105,13 +95,13 @@ x.trainable = False
 global_pool = GlobalAveragePooling2D()(x)
 hidden_1 = Dense(50, activation='relu')(global_pool)
 drop_2 = Dropout(0.5)(hidden_1)
-output_1 = Dense(5, activation='softmax')(drop_2)
+output_1 = Dense(4, activation='softmax')(drop_2)
 model = Model(inputs=base_model.input, outputs=output_1)
 
 
 print(model.summary())
 
-check_point = keras.callbacks.ModelCheckpoint(filepath=r'C:\KI\KI_Inspection\Stent_Type_BES\DesignModel.h5',monitor='val_loss',save_best_only=True)
+check_point = keras.callbacks.ModelCheckpoint(filepath=r'C:\Tensorflow2\workspace\Classifier_2\03_Final_Model\DesignModel_Contur.h5',monitor='val_loss',save_best_only=True)
 log_dir = os.path.join("logs", "fit", datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
 tensor_board = TensorBoard(log_dir=log_dir, histogram_freq=0, write_graph=True, write_images=True)
 callbacks_list = [check_point, tensor_board]

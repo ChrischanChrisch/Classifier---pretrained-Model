@@ -1,15 +1,15 @@
 import cv2
 import numpy as np
-from tensorflow.keras.models import load_model
+from keras.models import load_model
 from keras.preprocessing.image import ImageDataGenerator, img_to_array
 import imutils
 import matplotlib.pyplot as plt
 
 import cv2
-import tensorflow as tf
+#import tensorflow as tf
 import numpy as np
 
-model = load_model(r'C:\Users\csadmin\PycharmProjects\April_DAE\Stent_Type_Classification\04_Middle_Zoom\02_3_classes_LMIN\Saved_Models\011_25_sept_VGG_430_s_830_Inv_block3_conv3\011_25_sept_VGG_430_s_830_Inv.168-0.00.h5')##epoch 20 was good
+model = load_model(r'C:\Tensorflow2\workspace\Classifier_2\Final_Model\Model.h5')
 #print('Loaded model from the disk')
 
 cam = cv2.VideoCapture(0)
@@ -47,24 +47,20 @@ while (cam.isOpened()):
     if prediction == 0 and percent>99.0:
          percent=str(percent)
          text = 'S'
-         cv2.imwrite(r'C:\Users\csadmin\PycharmProjects\April_DAE\Stent_Type_Classification\04_Middle_Zoom\01_Testing_3_classes\Predicted_Imgs\S_'+j+'_'+ percent+'.jpg',frame)
     elif prediction == 1:# and percent>95.00:
          percent=str(percent)
          text = 'Invalid'
-        #cv2.imwrite(r'C:\Users\csadmin\PycharmProjects\April_DAE\Stent_Type_Classification\04_Middle_Zoom\01_Testing_3_classes\Predicted_Imgs\M_'+j+'_'+ percent+'.jpg',crop_img)
     elif prediction == 2:# and percent>95.00:
         percent=str(percent)
         text = 'Wrong Diameter'
-        #cv2.imwrite(r'C:\Users\csadmin\PycharmProjects\April_DAE\Stent_Type_Classification\04_Middle_Zoom\01_Testing_3_classes\Predicted_Imgs\S_'+j+'_'+ percent+'.jpg',crop_img)
-    # elif prediction == 3 and percent>95.00:
+   # elif prediction == 3 and percent>95.00:
     #     percent=str(percent)
     #     text = 'Invalid'
-        #cv2.imwrite(r'C:\Users\csadmin\PycharmProjects\April_DAE\Stent_Type_Classification\04_Middle_Zoom\01_Testing_3_classes\Predicted_Imgs\Invalid_'+j+'_'+ percent+'.jpg',crop_img)
 
 
-    #cv2.putText(frame, text, (70, 80), cv2.FONT_HERSHEY_DUPLEX, 1.0, (255, 255, 255),
-     #           lineType=cv2.LINE_AA)
-    # cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    cv2.putText(frame, text, (70, 80), cv2.FONT_HERSHEY_DUPLEX, 1.0, (255, 255, 255),
+                lineType=cv2.LINE_AA)
+    #cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
     # frame=(frame-frame.min())/(frame.max()-frame.min())
     j=int(j)
@@ -78,12 +74,6 @@ while (cam.isOpened()):
         # ESC pressed
         print("Escape hit, closing...")
         break
-    elif k % 256 == 32:
-        # SPACE pressed
-        img_name = "No_{}.jpg".format(img_counter)
-        cv2.imwrite(img_name, frame)
-        print("{} written!".format(img_name))
-    img_counter += 1
 
 cam.release()
 
